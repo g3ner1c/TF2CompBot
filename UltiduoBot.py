@@ -121,44 +121,40 @@ async def online(ctx):
 
 				ip, port = ip_port.split(":")
 
-				r = requests.get(f"https://teamwork.tf/api/v1/quickplay/server?ip={ip}&port={port}&key=u4NPE7w8yQWGmZfIjixrze0n2cAvMspR")
+				r = requests.get(f"https://teamwork.tf/api/v1/quickplay/server?ip={ip}&port={port}&key={os.getenv('teamworktoken')}")
 
 				try:
 
 					server = json.loads(r.text)[0]
 
-					connect = f"steam://connect/{ip_port}"
-
 					connected = ""
 
 					for player in server_ips[ip_port]:
 						
-						connected += ("> " + player + "\n")
+						connected += ("> **" + player + "**\n")
 					
 					connected = connected.strip()
 
 					embed.add_field(name="Server Name", value=server['name'], inline=True)
 					embed.add_field(name="IP", value=ip_port, inline=True)
-					embed.add_field(name="Join their server", value=f"[Connect]({connect})", inline=True)
+					embed.add_field(name="Join their server", value=f"steam://connect/{ip_port}", inline=True)
 
 					embed.add_field(name="Playing on this server", value=connected, inline=False)
 					
 
 				except (IndexError, KeyError) as e: # server not community or not on teamwork.tf list
 
-					connect = f"steam://connect/{ip_port}"
-
 					connected = ""
 
 					for player in server_ips[ip_port]:
 						
-						connected += ("> " + player + "\n")
+						connected += ("> **" + player + "**\n")
 
 					connected = connected.strip()
 
 					embed.add_field(name="Server Name", value='Unknown (Valve or private server not on teamwork.tf)', inline=True)
 					embed.add_field(name="IP", value=ip_port, inline=True)
-					embed.add_field(name="Join their server", value=f"[Connect]({connect})", inline=True)
+					embed.add_field(name="Join their server", value=f"steam://connect/{ip_port}", inline=True)
 
 					embed.add_field(name="Playing on this server", value=connected, inline=False)
 
