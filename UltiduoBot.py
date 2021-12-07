@@ -84,32 +84,34 @@ async def on_ready():
 @bot.command(brief='Checks whos online',description='Checks whos online')
 async def online(ctx):
 
-	embed=discord.Embed(title="Currently Playing TF2", color=0xcf7336)
+	async with ctx.typing():
 
-	for user_id in users:
+		embed=discord.Embed(title="Currently Playing TF2", color=0xcf7336)
 
-		r = requests.get(f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={os.getenv('steamtoken')}&steamids={discord2steam[user_id]}")
-		status = json.loads(r.text)['response']['players'][0]
+		for user_id in users:
 
-		try:
+			r = requests.get(f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={os.getenv('steamtoken')}&steamids={discord2steam[user_id]}")
+			status = json.loads(r.text)['response']['players'][0]
 
-			if status['gameid'] == '440':
+			try:
+
+				if status['gameid'] == '440':
+				
+					name = status['personaname']
+					ip = status['gameserverip']
+					connect = f"steam://connect/{ip}"
+
+					embed.add_field(name="Steam Name", value=name, inline=True)
+					embed.add_field(name="Connected to", value=ip, inline=True)
+					embed.add_field(name="Join their server", value=connect, inline=True)
 			
-				name = status['personaname']
-				ip = status['gameserverip']
-				connect = f"steam://connect/{ip}"
+			except KeyError:
 
-				embed.add_field(name="Steam Name", value=name, inline=True)
-				embed.add_field(name="Connected to", value=ip, inline=True)
-				embed.add_field(name="Join their server", value=connect, inline=True)
-		
-		except KeyError:
+				pass
 
-			pass
-
-		
-	embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
-	embed.timestamp = datetime.datetime.utcnow()
+			
+		embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+		embed.timestamp = datetime.datetime.utcnow()
 
 
 	# embed.add_field(name='Activity Details', value=str(member.activity.details), inline=False)
