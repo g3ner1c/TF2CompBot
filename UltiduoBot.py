@@ -67,10 +67,6 @@ with open("jsons/discord2steamid.json",'r') as f:
 
 users = list(discord2steam)
 
-def user_status(id):
-    status = requests.get(f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=8766EDA405993B3F12B619DEB617EFF8&steamids={str(id)}")
-    return json.loads(status.text)
-
 
 @bot.event
 async def on_ready():
