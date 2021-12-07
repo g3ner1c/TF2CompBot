@@ -86,9 +86,9 @@ async def online(ctx):
 
 	async with ctx.typing():
 
-		embed=discord.Embed(title="Currently Playing TF2", color=0xcf7336)
+		users_playing = {}
 
-		for user_id in users:
+		for user_id in users: # adds user info if they are on a server in tf2 to users_playing
 
 			r = requests.get(f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={os.getenv('steamtoken')}&steamids={discord2steam[user_id]}")
 			status = json.loads(r.text)['response']['players'][0]
@@ -97,17 +97,70 @@ async def online(ctx):
 
 				if status['gameid'] == '440':
 				
-					name = status['personaname']
-					ip = status['gameserverip']
-					connect = f"steam://connect/{ip}"
+					users_playing[status['personaname']] = status['gameserverip'] # eg. {'Generic':'64.94.100.34:27015'}
 
-					embed.add_field(name="Steam Name", value=name, inline=True)
-					embed.add_field(name="Connected to", value=ip, inline=True)
-					embed.add_field(name="Join their server", value=connect, inline=True)
-			
-			except KeyError:
+			except KeyError: # ignore if not playing tf2 or in a server
 
 				pass
+
+		if len(users_playing) == 0: # no user online
+
+			embed=discord.Embed(title="no one is in a server rn :(", color=0xcf7336)
+
+		else:
+
+			server_ips = {} # groups users by server ip theyre connected to
+
+			for i, j in users_playing.items(): # shamelessly stolen from Stack Overflow lol
+
+				server_ips[j] = [i] if j not in server_ips.keys() else server_ips[j] + [i]
+
+			embed=discord.Embed(title="People Currently Playing TF2", color=0xcf7336)
+
+			for ip_port in list(server_ips):
+
+				ip, port = ip_port.split(":")
+
+				r = requests.get(f"https://teamwork.tf/api/v1/quickplay/server?ip={ip}&port={port}&key=u4NPE7w8yQWGmZfIjixrze0n2cAvMspR")
+
+				try:
+
+					server = json.loads(r.text)[0]
+
+					connect = f"steam://connect/{ip_port}"
+
+					connected = ""
+
+					for player in server_ips[ip_port]:
+						
+						connected += ("> " + player + "\n")
+					
+					connected = connected.strip()
+
+					embed.add_field(name="Server Name", value=server['name'], inline=True)
+					embed.add_field(name="IP", value=ip_port, inline=True)
+					embed.add_field(name="Join their server", value=f"[Connect]({connect})", inline=True)
+
+					embed.add_field(name="Playing on this server", value=connected, inline=False)
+					
+
+				except (IndexError, KeyError) as e: # server not community or not on teamwork.tf list
+
+					connect = f"steam://connect/{ip_port}"
+
+					connected = ""
+
+					for player in server_ips[ip_port]:
+						
+						connected += ("> " + player + "\n")
+
+					connected = connected.strip()
+
+					embed.add_field(name="Server Name", value='Unknown (Valve or private server not on teamwork.tf)', inline=True)
+					embed.add_field(name="IP", value=ip_port, inline=True)
+					embed.add_field(name="Join their server", value=f"[Connect]({connect})", inline=True)
+
+					embed.add_field(name="Playing on this server", value=connected, inline=False)
 
 			
 		embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
