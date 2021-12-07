@@ -27,7 +27,7 @@ intents.members = True
 
 bot = commands.Bot(intents=intents, command_prefix='!')
 
-bot.help_command = PrettyHelp(color=0x7292a9) # 0x7292a9 should be used for all embeds
+bot.help_command = PrettyHelp(color=0xcf7336) # 0xcf7336 should be used for all embeds
 
 # client = discord.Client()
 slash = SlashCommand(bot, sync_commands=True)
@@ -60,6 +60,18 @@ playingStatus = ['Ultiduos', 'Spire MGE', 'Uncletopia | Atlanta 1', '24/7 plr_hi
 				 ]
 
 
+with open("jsons/discord2steamid.json",'r') as f:
+
+	discord2steam = json.load(f)
+	f.close()
+
+users = list(discord2steam)
+
+def user_status(id):
+    status = requests.get(f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=8766EDA405993B3F12B619DEB617EFF8&steamids={str(id)}")
+    return json.loads(status.text)
+
+
 @bot.event
 async def on_ready():
 
@@ -73,10 +85,45 @@ async def on_ready():
 		await asyncio.sleep(10)
 
 
+@bot.command(brief='Checks whos online',description='Checks whos online')
+async def online(ctx):
+
+	embed=discord.Embed(title="Currently Playing TF2", color=0xcf7336)
+
+	for user_id in users:
+
+		r = requests.get(f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={os.getenv('steamtoken')}&steamids={discord2steam[user_id]}")
+		status = json.loads(r.text)['response']['players'][0]
+
+		try:
+
+			if status['gameid'] == '440':
+			
+				name = status['personaname']
+				ip = status['gameserverip']
+				connect = f"steam://connect/{ip}"
+
+				embed.add_field(name="Steam Name", value=name, inline=True)
+				embed.add_field(name="Connected to", value=ip, inline=True)
+				embed.add_field(name="Join their server", value=connect, inline=True)
+		
+		except KeyError:
+
+			pass
+
+		
+	embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+	embed.timestamp = datetime.datetime.utcnow()
+
+
+	# embed.add_field(name='Activity Details', value=str(member.activity.details), inline=False)
+	await ctx.send(embed=embed)
+
+
 @bot.command(brief='Returns user info',description='Returns user info')
 async def user(ctx, member: discord.Member):
 
-	embed=discord.Embed(title="User Information", color=0x7292a9)
+	embed=discord.Embed(title="User Information", color=0xcf7336)
 	embed.add_field(name='Server', value='**'+str(member.guild)+'**', inline=False)
 	embed.add_field(name='Username', value=member, inline=False)
 	embed.add_field(name='Server Nickname', value=member.nick, inline=False)
@@ -96,7 +143,7 @@ async def user(ctx, member: discord.Member):
 @bot.command(brief='Returns latency to the server',description='Returns latency to the server in milliseconds')
 async def ping(ctx):
 
-	embed=discord.Embed(title="Pong!", color=0x7292a9)
+	embed=discord.Embed(title="Pong!", color=0xcf7336)
 	embed.add_field(name="Latency", value=(f'`{round(bot.latency * 1000, 3)}ms`'), inline=False)
 	embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
 	embed.timestamp = datetime.datetime.utcnow()
@@ -134,7 +181,7 @@ async def netgraph(ctx):
 		plt.savefig("temp/netgraph.png")
 
 		file = discord.File("temp/netgraph.png")
-		embed = discord.Embed(color=0x7292a9)
+		embed = discord.Embed(color=0xcf7336)
 		embed.set_image(url="attachment://netgraph.png")
 		embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
 		embed.timestamp = datetime.datetime.utcnow()
@@ -166,7 +213,7 @@ async def status(ctx):
 	str(math.floor(((t2-t1) % 3600)/60)) + ' minutes ' +
 	str(round((t2-t1) % 60, 3)) + ' seconds')
 
-	embed=discord.Embed(title="Status", color=0x7292a9)
+	embed=discord.Embed(title="Status", color=0xcf7336)
 	embed.add_field(name='Online for', value=time_online, inline=False)
 	embed.add_field(name="Online since", value='`'+str(t1)+'`', inline=False)
 	embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
