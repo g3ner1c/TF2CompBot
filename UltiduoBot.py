@@ -72,12 +72,14 @@ async def check_hours_played():
 	await bot.wait_until_ready()
 	while not bot.is_closed():
 
+		global hours
+
 		new_hours = {}
 
-		for user in list(discord2steam):
+		for user_id in list(discord2steam):
 
 
-			url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={os.getenv('steamtoken')}&input_json="+quote(f'{{"steamid": {discord2steam[user]}, "include_played_free_games": true, "appids_filter": [440]}}')
+			url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={os.getenv('steamtoken')}&input_json="+quote(f'{{"steamid": {discord2steam[user_id]}, "include_played_free_games": true, "appids_filter": [440]}}')
 
 			r = requests.get(url)
 
@@ -85,17 +87,17 @@ async def check_hours_played():
 
 				hours_played = json.loads(r.text)['response']['games'][0]['playtime_forever']/60
 
-				print(discord2steam[user] + ': ' + str(hours_played))
+				print(discord2steam[user_id] + ': ' + str(hours_played))
 
-				if (hours_played // 100) >= (hours[user] // 100):
+				if (hours_played // 100) >= (hours[user_id] // 100):
 					
-					embed=discord.Embed(title="Congratulations!", description=f"{bot.get_user(user).mention} has reached **{str((hours_played // 100)*100)} hours** in TF2!", color=0xcf7336)
+					embed=discord.Embed(title="Congratulations!", description=f"<@{user_id}> has reached **{str(int((hours_played // 100)*100))} hours** in TF2!", color=0xcf7336)
 
 					embed.timestamp = datetime.datetime.utcnow()
 
-					bot.get_channel(890820026800676894).send(embed=embed)
+					await bot.get_channel(890820026800676894).send(embed=embed)
 
-				new_hours[user] = hours_played
+				new_hours[user_id] = hours_played
 
 			except KeyError:
 
@@ -108,15 +110,13 @@ async def check_hours_played():
 			f.close()
 
 		with open("json/hours.json", 'r') as f:
-
-			global hours
 			
 			hours = json.load(f)
 
 			f.close()
 			
 
-		await asyncio.sleep(1200) # checks every 20 minutes
+		await asyncio.sleep(600) # checks every 10 minutes
 
 
 playingStatus = ['Ultiduos', 'Spire MGE', 'Uncletopia | Atlanta 1', '24/7 plr_hightower'
@@ -344,7 +344,7 @@ t1 = time.time()
 
 bot.loop.create_task(heartbeat())
 
-bot.loop.create_task(check_hours_played())
+# bot.loop.create_task(check_hours_played())
 
 keep_alive()
 
