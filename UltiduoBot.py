@@ -5,6 +5,7 @@ import math
 import os
 import random
 import time
+from urllib.parse import quote
 
 import discord
 import matplotlib.pyplot as plt
@@ -32,6 +33,16 @@ bot.help_command = PrettyHelp(color=0xcf7336) # 0xcf7336 should be used for all 
 # client = discord.Client()
 slash = SlashCommand(bot, sync_commands=True)
 
+with open("jsons/discord2steamid.json",'r') as f:
+
+	discord2steam = json.load(f)
+	f.close()
+
+with open("jsons/hours.json",'r') as f:
+
+	hours = json.load(f)
+	f.close()
+
 
 async def heartbeat():
 
@@ -54,16 +65,63 @@ async def heartbeat():
 			time_ping = time.time()
 
 		await asyncio.sleep(40)
+		
+
+async def check_hours_played():
+
+	await bot.wait_until_ready()
+	while not bot.is_closed():
+
+		new_hours = {}
+
+		for user in list(discord2steam):
+
+
+			url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={os.getenv('steamtoken')}&input_json="+quote(f'{{"steamid": {discord2steam[user]}, "include_played_free_games": true, "appids_filter": [440]}}')
+
+			r = requests.get(url)
+
+			try:
+
+				hours_played = json.loads(r.text)['response']['games'][0]['playtime_forever']/60
+
+				print(discord2steam[user] + ': ' + str(hours_played))
+
+				if (hours_played // 100) >= (hours[user] // 100):
+					
+					embed=discord.Embed(title="Congratulations!", description=f"{bot.get_user(user).mention} has reached **{str((hours_played // 100)*100)} hours** in TF2!", color=0xcf7336)
+
+					embed.timestamp = datetime.datetime.utcnow()
+
+					bot.get_channel(890820026800676894).send(embed=embed)
+
+				new_hours[user] = hours_played
+
+			except KeyError:
+
+				pass
+
+		with open("json/hours.json", 'w') as f:
+
+			json.dump(new_hours, f, indent=4)
+
+			f.close()
+
+		with open("json/hours.json", 'r') as f:
+
+			global hours
+			
+			hours = json.load(f)
+
+			f.close()
+			
+
+		await asyncio.sleep(1200) # checks every 20 minutes
 
 
 playingStatus = ['Ultiduos', 'Spire MGE', 'Uncletopia | Atlanta 1', '24/7 plr_hightower'
 				 ]
 
-
-with open("jsons/discord2steamid.json",'r') as f:
-
-	discord2steam = json.load(f)
-	f.close()
 
 users = list(discord2steam)
 
@@ -137,7 +195,7 @@ async def online(ctx):
 
 					embed.add_field(name="Server Name", value=server['name'], inline=True)
 					embed.add_field(name="IP", value=ip_port, inline=True)
-					embed.add_field(name="Join their server", value=f"steam://connect/{ip_port}", inline=True)
+					embed.add_field(name="Join this server", value=f"steam://connect/{ip_port}", inline=True)
 
 					embed.add_field(name="Playing on this server", value=connected, inline=False)
 					
@@ -154,7 +212,7 @@ async def online(ctx):
 
 					embed.add_field(name="Server Name", value='Unknown (Valve or private server not on teamwork.tf)', inline=True)
 					embed.add_field(name="IP", value=ip_port, inline=True)
-					embed.add_field(name="Join their server", value=f"steam://connect/{ip_port}", inline=True)
+					embed.add_field(name="Join this server", value=f"steam://connect/{ip_port}", inline=True)
 
 					embed.add_field(name="Playing on this server", value=connected, inline=False)
 
@@ -285,6 +343,8 @@ async def kill(ctx):
 t1 = time.time()
 
 bot.loop.create_task(heartbeat())
+
+bot.loop.create_task(check_hours_played())
 
 keep_alive()
 
