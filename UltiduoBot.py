@@ -87,8 +87,6 @@ async def check_hours_played():
 
 				hours_played = json.loads(r.text)['response']['games'][0]['playtime_forever']/60
 
-				print(discord2steam[user_id] + ': ' + str(hours_played))
-
 				if (hours_played // 100) >= (hours[user_id] // 100):
 					
 					embed=discord.Embed(title="Congratulations!", description=f"<@{user_id}> has reached **{str(int((hours_played // 100)*100))} hours** in TF2!", color=0xcf7336)
