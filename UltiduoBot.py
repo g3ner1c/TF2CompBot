@@ -86,6 +86,8 @@ async def check_hours_played():
 			try:
 
 				hours_played = json.loads(r.text)['response']['games'][0]['playtime_forever']/60
+				
+				# print(user_id + ': ' + discord2steam[user_id] + ': ' + str(hours_played))
 
 				if (hours_played // 100) > (hours[user_id] // 100):
 					
@@ -101,20 +103,20 @@ async def check_hours_played():
 
 				pass
 
-		with open("json/hours.json", 'w') as f:
+		with open("jsons/hours.json", 'w') as f:
 
 			json.dump(new_hours, f, indent=4)
 
 			f.close()
 
-		with open("json/hours.json", 'r') as f:
+		with open("jsons/hours.json", 'r') as f:
 			
 			hours = json.load(f)
 
 			f.close()
 			
 
-		await asyncio.sleep(600) # checks every 10 minutes
+		await asyncio.sleep(300) # checks every 5 minutes
 
 
 playingStatus = ['Ultiduos', 'Spire MGE', 'Uncletopia | Atlanta 1', '24/7 plr_hightower'
@@ -342,7 +344,7 @@ t1 = time.time()
 
 bot.loop.create_task(heartbeat())
 
-# bot.loop.create_task(check_hours_played())
+bot.loop.create_task(check_hours_played())
 
 keep_alive()
 
