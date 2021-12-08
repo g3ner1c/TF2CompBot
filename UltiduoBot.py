@@ -305,7 +305,7 @@ async def info(ctx):
 @bot.command(brief='GitHub Repository',description='GitHub Repository')
 async def github(ctx):
 
-	await ctx.send('https://github.com/awesomeplaya211/BackpackBot')
+	await ctx.send('https://github.com/awesomeplaya211/UltiduoBot')
 
 
 @bot.command(brief='Status check with uptime',description='Status check with uptime')
