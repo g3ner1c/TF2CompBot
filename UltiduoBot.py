@@ -73,8 +73,12 @@ async def check_hours_played():
 	while not bot.is_closed():
 
 		global hours
+		
+		with open("jsons/discord2steamid.json",'r') as f:
 
-		new_hours = {}
+			discord2steam = json.load(f)
+			f.close()
+
 
 		for user_id in list(discord2steam):
 
@@ -89,15 +93,21 @@ async def check_hours_played():
 				
 				# print(user_id + ': ' + discord2steam[user_id] + ': ' + str(hours_played))
 
-				if (hours_played // 100) > (hours[user_id] // 100):
+				try:
+
+					if (hours_played // 100) > (hours[user_id] // 100):
 					
-					embed=discord.Embed(title="Congratulations!", description=f"<@{user_id}> has reached **{str(int((hours_played // 100)*100))} hours** in TF2!", color=0xcf7336)
+						embed=discord.Embed(title="Congratulations!", description=f"<@{user_id}> has reached **{str(int((hours_played // 100)*100))} hours** in TF2!", color=0xcf7336)
 
-					embed.timestamp = datetime.datetime.utcnow()
+						embed.timestamp = datetime.datetime.utcnow()
 
-					await bot.get_channel(890820026800676894).send(embed=embed)
+						await bot.get_channel(890820026800676894).send(embed=embed)
+				
+				except KeyError: # New entry in dict
 
-				new_hours[user_id] = hours_played
+					pass
+
+				hours[user_id] = hours_played
 
 			except KeyError:
 
@@ -107,14 +117,12 @@ async def check_hours_played():
 
 		with open("jsons/hours.json", 'w') as f:
 
-			json.dump(new_hours, f, indent=4)
-
+			json.dump(hours, f, indent=4)
 			f.close()
 
 		with open("jsons/hours.json", 'r') as f:
 			
 			hours = json.load(f)
-
 			f.close()
 			
 
@@ -185,15 +193,17 @@ async def online(ctx):
 			embed=discord.Embed(title="People Currently Playing TF2", color=0xcf7336)
 
 
-			connected = ""
+			if len(users_in_menu) != 0:
 
-			for player in users_in_menu:
+				connected = ""
+
+				for player in users_in_menu:
+					
+					connected += ("> **" + player + "**\n")
 				
-				connected += ("> **" + player + "**\n")
-			
-			connected = connected.strip()
+				connected = connected.strip()
 
-			embed.add_field(name="In Menu", value=connected, inline=False)
+				embed.add_field(name="In Menu", value=connected, inline=False)
 
 
 			for ip_port in list(server_ips):
