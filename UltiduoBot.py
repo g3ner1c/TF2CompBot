@@ -145,6 +145,7 @@ async def online(ctx):
 	async with ctx.typing():
 
 		users_playing = {}
+		users_in_menu = []
 
 		for user_id in users: # adds user info if they are on a server in tf2 to users_playing
 
@@ -154,14 +155,20 @@ async def online(ctx):
 			try:
 
 				if status['gameid'] == '440':
-				
-					users_playing[status['personaname']] = status['gameserverip'] # eg. {'Generic':'64.94.100.34:27015'}
 
-			except KeyError: # ignore if not playing tf2 or in a server
+					try:
+				
+						users_playing[status['personaname']] = status['gameserverip'] # eg. {'Generic':'64.94.100.34:27015'}
+
+					except KeyError: # not in a server
+
+						users_in_menu.append(status['personaname'])
+
+			except KeyError: # ignore if not playing tf2
 
 				pass
 
-		if len(users_playing) == 0: # no user online
+		if len(users_playing) == 0 and len(users_in_menu) == 0: # no user online
 
 			embed=discord.Embed(title="no one is in a server rn :(", color=0xcf7336)
 
@@ -174,6 +181,18 @@ async def online(ctx):
 				server_ips[j] = [i] if j not in server_ips.keys() else server_ips[j] + [i]
 
 			embed=discord.Embed(title="People Currently Playing TF2", color=0xcf7336)
+
+
+			connected = ""
+
+			for player in users_in_menu:
+				
+				connected += ("> **" + player + "**\n")
+			
+			connected = connected.strip()
+
+			embed.add_field(name="In Menu", value=connected, inline=False)
+
 
 			for ip_port in list(server_ips):
 
