@@ -103,6 +103,8 @@ async def check_hours_played():
 
 				pass
 
+		print('hours updated')
+
 		with open("jsons/hours.json", 'w') as f:
 
 			json.dump(new_hours, f, indent=4)
