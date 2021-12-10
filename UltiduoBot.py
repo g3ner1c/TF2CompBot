@@ -268,9 +268,14 @@ async def logs(ctx):
 
 	else:
 
+		r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(ctx.message.author.id)]}&limit=5")
+
 		embed=discord.Embed(title='Logs of ' + ctx.message.author.mention, color=0xcf7336)
 
-		r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(ctx.message.author.id)]}&limit=5")
+		if len(json.loads(r.text)['logs']) == 0:
+
+			embed.description = "You don't have any logs on logs.tf :("
+
 
 		for log in json.loads(r.text)['logs']:
 
