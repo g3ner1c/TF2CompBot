@@ -272,7 +272,7 @@ async def logs(ctx):
 
 			r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(ctx.message.author.id)]}&limit=5")
 
-			embed=discord.Embed(title='Logs of ' + ctx.message.author.display_name, color=0xcf7336)
+			embed=discord.Embed(title='Recent logs of ' + ctx.message.author.display_name, color=0xcf7336)
 
 			if len(json.loads(r.text)['logs']) == 0:
 
@@ -281,7 +281,7 @@ async def logs(ctx):
 
 			for log in json.loads(r.text)['logs']:
 
-				embed.add_field(name=f"[{log['title']}](https://logs.tf/{log['id']})", value=f"*{log['map']}*", inline=True)
+				embed.add_field(name=f"{log['title']} (https://logs.tf/{log['id']})", value=f"**{log['map']}**", inline=True)
 				embed.add_field(name='Date', value=datetime.datetime.fromtimestamp(log['date']).strftime('%Y-%m-%d'), inline=True)
 				embed.add_field(name='Players', value=log['players'], inline=True)
 
