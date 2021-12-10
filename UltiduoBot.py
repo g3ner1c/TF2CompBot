@@ -73,6 +73,7 @@ async def check_hours_played():
 	while not bot.is_closed():
 
 		global hours
+		global discord2steam
 		
 		with open("jsons/discord2steamid.json",'r') as f:
 
