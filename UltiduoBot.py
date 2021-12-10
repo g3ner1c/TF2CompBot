@@ -296,9 +296,23 @@ async def user(ctx, member: discord.Member):
 	embed=discord.Embed(title="User Information", color=0xcf7336)
 	embed.add_field(name='Username', value=member, inline=False)
 	embed.add_field(name='Server Nickname', value=member.nick, inline=False)
-	embed.add_field(name='ID', value='`'+str(member.id)+'`', inline=False)
-	embed.add_field(name='Status', value='`'+str(member.status)+'`', inline=False)
-	embed.add_field(name='Joined', value='`'+str(member.joined_at)+'`', inline=False)
+
+	try:
+		embed.add_field(name='Steam', value=f"https://steamcommunity.com/profiles/{discord2steam[str(member.id)]}", inline=False)
+	except KeyError:
+		pass
+	try: 
+		embed.add_field(name='Hours in TF2', value=str(hours[str(member.id)]), inline=False)
+	except KeyError:
+		pass
+	try:
+		embed.add_field(name='RGL', value=f"https://rgl.gg/Public/PlayerProfile.aspx?p={discord2steam[str(member.id)]}", inline=False)
+		embed.add_field(name='UGC', value=f"https://www.ugcleague.com/players_page.cfm?player_id={discord2steam[str(member.id)]}", inline=False)
+	except KeyError:
+		pass
+	# embed.add_field(name='ID', value='`'+str(member.id)+'`', inline=False)
+	# embed.add_field(name='Status', value='`'+str(member.status)+'`', inline=False)
+	# embed.add_field(name='Joined', value='`'+str(member.joined_at)+'`', inline=False)
 	embed.add_field(name='Role', value=str(member.top_role), inline=False)
 		
 	embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))

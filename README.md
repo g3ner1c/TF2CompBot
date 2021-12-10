@@ -4,8 +4,7 @@
 
 ### TODO
 
-- !log for log.tf logs
-- more detailed !user
+- class stats from logs
 - leaderboard?
 
 ### Data sources
