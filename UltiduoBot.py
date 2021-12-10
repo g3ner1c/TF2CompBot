@@ -257,11 +257,36 @@ async def online(ctx):
 	await ctx.send(embed=embed)
 
 
+@bot.command(brief='Gets recent logs from logs.tf',description='Gets recent logs from logs.tf')
+async def logs(ctx):
+
+	
+	if str(ctx.message.author.id) not in list(discord2steam):
+
+		embed = discord.Embed(title="Sorry your SteamID isn't in the database yet :(", description="Contact <@538921994645798915> to tell them your SteamID", color=0xcf7336)
+
+
+	else:
+
+		embed=discord.Embed(title='Logs of ' + ctx.message.author.mention, color=0xcf7336)
+
+		r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(ctx.message.author.id)]}&limit=5")
+
+		for log in json.loads(r.text)['logs']:
+
+			embed.add_field(name=f"[{log['title']}(https://logs.tf/{log['id']})]", value=f"*{log['map']}*", inline=True)
+			embed.add_field(name='Date', value=datetime.datetime.fromtimestamp(log['date']).strftime('%Y-%m-%d'), inline=True)
+			embed.add_field(name='Players', value=log['players'], inline=True)
+
+	embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+	embed.timestamp = datetime.datetime.utcnow()
+
+	await ctx.send(embed=embed)
+
 @bot.command(brief='Returns user info',description='Returns user info')
 async def user(ctx, member: discord.Member):
 
 	embed=discord.Embed(title="User Information", color=0xcf7336)
-	embed.add_field(name='Server', value='**'+str(member.guild)+'**', inline=False)
 	embed.add_field(name='Username', value=member, inline=False)
 	embed.add_field(name='Server Nickname', value=member.nick, inline=False)
 	embed.add_field(name='ID', value='`'+str(member.id)+'`', inline=False)
