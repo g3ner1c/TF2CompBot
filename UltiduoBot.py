@@ -269,16 +269,16 @@ async def logs(ctx, member: discord.Member=None):
 	async with ctx.typing():
 
 	
-		if str(ctx.message.author.id) not in list(discord2steam):
+		if str(member.id) not in list(discord2steam):
 
 			embed = discord.Embed(title="Sorry your SteamID isn't in the database yet :(", description="Contact <@538921994645798915> to tell them your SteamID", color=0xcf7336)
 
 
 		else:
 
-			r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(ctx.message.author.id)]}&limit=5")
+			r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(member.id)]}&limit=5")
 
-			embed=discord.Embed(title='Recent logs of ' + ctx.message.author.display_name, color=0xcf7336)
+			embed=discord.Embed(title='Recent logs of ' + member.display_name, color=0xcf7336)
 
 			if len(json.loads(r.text)['logs']) == 0:
 
