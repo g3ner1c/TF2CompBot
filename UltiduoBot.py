@@ -300,10 +300,51 @@ async def logs(ctx, member: discord.Member=None):
 @bot.command(brief='Medic performance analysis for logs',description='Medic performance analysis for logs from logs.tf')
 async def medicstats(ctx, logtf_id):
 
+	async with ctx.typing():
 
-    r = requests.get(f"https://logs.tf/json/{logtf_id}")
-    json.loads(r.text)
+		r = requests.get(f"https://logs.tf/json/{logtf_id}")
+		log = json.loads(r.text)
 
+		for player in list(log['players']): # get medics from players
+
+			if log['players'][player]['class_stats'][0]['type'] == 'medic' and player['team'] == 'Blue':
+				# blu medic
+				blu_id = player
+				blu_medic = log['players'][player]
+
+			elif player['players'][player]['class_stats'][0]['type'] == 'medic' and player['team'] == 'Red':
+				# red medic
+				red_id = player
+				red_medic = log['players'][player]
+			
+		embed=discord.Embed(title=f"Medic analysis of {log['info']['title']}")
+
+		embed.add_field(name="\u200b", value="\u200b", inline=True)
+		embed.add_field(name="BLU", value="\u200b", inline=True)
+		embed.add_field(name="RED", value="\u200b", inline=True)
+		
+		embed.add_field(name="Name", value="\u200b", inline=True)
+		embed.add_field(name=log['names'][blu_id], value="\u200b", inline=True)
+		embed.add_field(name=log['names'][red_id], value="\u200b", inline=True)
+
+		embed.add_field(name="Healing", value="\u200b", inline=True)
+		embed.add_field(name=str(blu_medic['heal']), value=f"{str(round(blu_medic['heal']/(log['info']['total_length']/60)))}/m")
+		embed.add_field(name=str(red_medic['heal']), value=f"{str(round(red_medic['heal']/(log['info']['total_length']/60)))}/m")
+
+		embed.add_field(name="Ubers", value="\u200b", inline=True)
+		embed.add_field(name=str(blu_medic['ubers']), value="\u200b", inline=True)
+		embed.add_field(name=str(red_medic['ubers']), value="\u200b", inline=True)
+
+		embed.add_field(name="Drops", value="\u200b", inline=True)
+		embed.add_field(name=str(blu_medic['drops']), value="\u200b", inline=True)
+		embed.add_field(name=str(red_medic['drops']), value="\u200b", inline=True)
+
+		embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+		embed.timestamp = datetime.datetime.utcnow()
+
+
+	await ctx.send(embed=embed)
+	
 
 @bot.command(brief='Returns user info',description='Returns user info')
 async def user(ctx, member: discord.Member=None):
