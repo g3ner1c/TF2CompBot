@@ -302,7 +302,7 @@ async def user(ctx, member: discord.Member):
 	except KeyError:
 		pass
 	try: 
-		embed.add_field(name='Hours in TF2', value=str(hours[str(member.id)]), inline=False)
+		embed.add_field(name='Hours in TF2', value=str(round(hours[str(member.id)])), inline=False)
 	except KeyError:
 		pass
 	try:
