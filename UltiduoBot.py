@@ -5,6 +5,7 @@ import math
 import os
 import random
 import time
+import typing
 from urllib.parse import quote
 
 import discord
@@ -258,7 +259,12 @@ async def online(ctx):
 
 
 @bot.command(brief='Gets recent logs from logs.tf',description='Gets recent logs from logs.tf')
-async def logs(ctx):
+async def logs(ctx, member: discord.Member=None):
+
+	if member is None:
+
+		member = ctx.message.author
+	
 
 	async with ctx.typing():
 
@@ -290,8 +296,20 @@ async def logs(ctx):
 
 	await ctx.send(embed=embed)
 
+
+@bot.command(brief='Medic performance analysis for logs',description='Medic performance analysis for logs from logs.tf')
+async def medicstats(ctx, logtf_id):
+
+
+    r = requests.get(f"https://logs.tf/json/{logtf_id}")
+    json.loads(r.text)
+
+
 @bot.command(brief='Returns user info',description='Returns user info')
-async def user(ctx, member: discord.Member):
+async def user(ctx, member: discord.Member=None):
+
+	if member is None:
+		member = ctx.message.author
 
 	embed=discord.Embed(title="User Information", color=0xcf7336)
 	embed.add_field(name='Username', value=member, inline=False)

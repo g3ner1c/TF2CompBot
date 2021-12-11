@@ -5,6 +5,8 @@
 ### TODO
 
 - class stats from logs
+  - medic
+  - 
 - leaderboard?
 
 ### Data sources
