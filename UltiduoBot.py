@@ -307,12 +307,12 @@ async def medicstats(ctx, logtf_id):
 
 		for player in list(log['players']): # get medics from players
 
-			if log['players'][player]['class_stats'][0]['type'] == 'medic' and player['team'] == 'Blue':
+			if log['players'][player]['class_stats'][0]['type'] == 'medic' and log['players'][player]['team'] == 'Blue':
 				# blu medic
 				blu_id = player
 				blu_medic = log['players'][player]
 
-			elif player['players'][player]['class_stats'][0]['type'] == 'medic' and player['team'] == 'Red':
+			elif log['players'][player]['class_stats'][0]['type'] == 'medic' and log['players'][player]['team'] == 'Red':
 				# red medic
 				red_id = player
 				red_medic = log['players'][player]
