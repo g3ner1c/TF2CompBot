@@ -278,7 +278,7 @@ async def logs(ctx, member: discord.Member=None):
 
 			r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(member.id)]}&limit=5")
 
-			embed=discord.Embed(title='Recent logs of ' + member.display_name, color=0xcf7336)
+			embed=discord.Embed(title='Recent logs of ' + member.display_name, url=f"https://logs.tf/profile/{discord2steam[str(member.id)]}", color=0xcf7336)
 
 			if len(json.loads(r.text)['logs']) == 0:
 
