@@ -317,7 +317,7 @@ async def medicstats(ctx, logtf_id):
 				red_id = player
 				red_medic = log['players'][player]
 			
-		embed=discord.Embed(title=f"Medic analysis of {log['info']['title']}", description=f"*Played on {log['info']['map']}*")
+		embed=discord.Embed(title=f"Medic analysis of {log['info']['title']}", description=f"[logs.tf](https://logs.tf/{logtf_id})\n{log['info']['map']}", color=0xcf7336)
 
 		embed.add_field(name="\u200b", value="\u200b", inline=True)
 		embed.add_field(name="BLU", value="\u200b", inline=True)
@@ -327,45 +327,45 @@ async def medicstats(ctx, logtf_id):
 		embed.add_field(name=log['names'][blu_id], value="\u200b", inline=True)
 		embed.add_field(name=log['names'][red_id], value="\u200b", inline=True)
 
-		embed.add_field(name="Healing", value="\u200b", inline=True)
-		embed.add_field(name=str(blu_medic['heal']), value=f"{str(round(blu_medic['heal']/(log['info']['total_length']/60)))}/m")
-		embed.add_field(name=str(red_medic['heal']), value=f"{str(round(red_medic['heal']/(log['info']['total_length']/60)))}/m")
+		embed.add_field(name="Healing", value="**Avg. time before healing**", inline=True)
+		embed.add_field(name=str(blu_medic['heal'])+f" ({str(round(blu_medic['heal']/(log['info']['total_length']/60)))}/m)", value="**"+str(round(blu_medic['medicstats']['avg_time_before_healing'],2)) + ' s**')
+		embed.add_field(name=str(red_medic['heal'])+f" ({str(round(red_medic['heal']/(log['info']['total_length']/60)))}/m)", value="**"+str(round(red_medic['medicstats']['avg_time_before_healing'],2)) + ' s**')
 
 		embed.add_field(name="Ubers", value="\u200b", inline=True)
 		embed.add_field(name=str(blu_medic['ubers']), value="\u200b", inline=True)
 		embed.add_field(name=str(red_medic['ubers']), value="\u200b", inline=True)
 
-		embed.add_field(name="Drops", value="\u200b", inline=True)
-		embed.add_field(name=str(blu_medic['drops']), value="\u200b", inline=True)
-		embed.add_field(name=str(red_medic['drops']), value="\u200b", inline=True)
+		# embed.add_field(name="Drops", value="\u200b", inline=True)
+		# embed.add_field(name=str(blu_medic['drops']), value="\u200b", inline=True)
+		# embed.add_field(name=str(red_medic['drops']), value="\u200b", inline=True)
 
-		embed.add_field(name="Deaths", value="\u200b", inline=True)
-		embed.add_field(name=str(blu_medic['deaths']), value="\u200b", inline=True)
-		embed.add_field(name=str(red_medic['deaths']), value="\u200b", inline=True)
+		embed.add_field(name="Deaths", value="**Drops**", inline=True)
+		embed.add_field(name=str(blu_medic['deaths']), value="**"+str(blu_medic['drops'])+"**", inline=True)
+		embed.add_field(name=str(red_medic['deaths']), value="**"+str(red_medic['drops'])+"**", inline=True)
 
 		embed.add_field(name="95-99% Uber Deaths", value="\u200b", inline=True)
-		embed.add_field(name=str(blu_medic['medicstats']['deaths_within_20s_after_uber']), value="\u200b", inline=True)
-		embed.add_field(name=str(red_medic['medicstats']['deaths_within_20s_after_uber']), value="\u200b", inline=True)
+		embed.add_field(name=str(blu_medic['medicstats']['deaths_with_95_99_uber']), value="\u200b", inline=True)
+		embed.add_field(name=str(red_medic['medicstats']['deaths_with_95_99_uber']), value="\u200b", inline=True)
 
-		embed.add_field(name="Avg. time before healing", value="\u200b", inline=True)
-		embed.add_field(name=str(round(blu_medic['medicstats']['avg_time_before_healing'],2)) + ' s', value="\u200b", inline=True)
-		embed.add_field(name=str(round(red_medic['medicstats']['avg_time_before_healing'],2)) + ' s', value="\u200b", inline=True)
+		# embed.add_field(name="Avg. time before healing", value="\u200b", inline=True)
+		# embed.add_field(name=str(round(blu_medic['medicstats']['avg_time_before_healing'],2)) + ' s', value="\u200b", inline=True)
+		# embed.add_field(name=str(round(red_medic['medicstats']['avg_time_before_healing'],2)) + ' s', value="\u200b", inline=True)
 
-		embed.add_field(name="Avg. time to build", value="\u200b", inline=True)
-		embed.add_field(name=str(round(blu_medic['medicstats']['avg_time_to_build'],2)) + ' s', value="\u200b", inline=True)
-		embed.add_field(name=str(round(red_medic['medicstats']['avg_time_to_build'],2)) + ' s', value="\u200b", inline=True)
+		embed.add_field(name="Avg. time to build", value="**Avg. time before using**", inline=True)
+		embed.add_field(name=str(round(blu_medic['medicstats']['avg_time_to_build'],2)) + ' s', value="**"+str(round(blu_medic['medicstats']['avg_time_before_using'],2)) + ' s**', inline=True)
+		embed.add_field(name=str(round(red_medic['medicstats']['avg_time_to_build'],2)) + ' s', value="**"+str(round(red_medic['medicstats']['avg_time_before_using'],2)) + ' s**', inline=True)
 
-		embed.add_field(name="Avg. time before using", value="\u200b", inline=True)
-		embed.add_field(name=str(round(blu_medic['medicstats']['avg_time_before_using'],2)) + ' s', value="\u200b", inline=True)
-		embed.add_field(name=str(round(red_medic['medicstats']['avg_time_before_using'],2)) + ' s', value="\u200b", inline=True)
+		# embed.add_field(name="Avg. time before using", value="\u200b", inline=True)
+		# embed.add_field(name=str(round(blu_medic['medicstats']['avg_time_before_using'],2)) + ' s', value="\u200b", inline=True)
+		# embed.add_field(name=str(round(red_medic['medicstats']['avg_time_before_using'],2)) + ' s', value="\u200b", inline=True)
 
-		embed.add_field(name="Advantages Lost", value="\u200b", inline=True)
-		embed.add_field(name=str(blu_medic['medicstats']['advantages_lost']), value="\u200b", inline=True)
-		embed.add_field(name=str(red_medic['medicstats']['advantages_lost']), value="\u200b", inline=True)
+		embed.add_field(name="Advantages Lost", value="**Biggest Advantage Lost**", inline=True)
+		embed.add_field(name=str(blu_medic['medicstats']['advantages_lost']), value="**"+str(blu_medic['medicstats']['biggest_advantage_lost'])+f" s (~{int(round((blu_medic['medicstats']['biggest_advantage_lost'])*100/(blu_medic['medicstats']['avg_time_to_build']), -1))}% lost)**", inline=True)
+		embed.add_field(name=str(red_medic['medicstats']['advantages_lost']), value="**"+str(red_medic['medicstats']['biggest_advantage_lost'])+f" s (~{int(round((red_medic['medicstats']['biggest_advantage_lost'])*100/(red_medic['medicstats']['avg_time_to_build']), -1))}% lost)**", inline=True)
 
-		embed.add_field(name="Biggest Advantage Lost", value="\u200b", inline=True)
-		embed.add_field(name=str(blu_medic['medicstats']['biggest_advantage_lost']) + ' s', value=f"~{round((blu_medic['medicstats']['biggest_advantage_lost'])*100/(red_medic['medicstats']['avg_time_to_build']), -1)}% uber advantage", inline=True)
-		embed.add_field(name=str(red_medic['medicstats']['biggest_advantage_lost']) + ' s', value=f"~{round((red_medic['medicstats']['biggest_advantage_lost'])*100/(blu_medic['medicstats']['avg_time_to_build']), -1)}% uber advantage", inline=True)
+		# embed.add_field(name="Biggest Advantage Lost", value="\u200b", inline=True)
+		# embed.add_field(name=str(blu_medic['medicstats']['biggest_advantage_lost']) + ' s', value=f"~{round((blu_medic['medicstats']['biggest_advantage_lost'])*100/(blu_medic['medicstats']['avg_time_to_build']), -1)}% uber advantage", inline=True)
+		# embed.add_field(name=str(red_medic['medicstats']['biggest_advantage_lost']) + ' s', value=f"~{round((red_medic['medicstats']['biggest_advantage_lost'])*100/(red_medic['medicstats']['avg_time_to_build']), -1)}% uber advantage", inline=True)
 
 
 		embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
