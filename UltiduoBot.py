@@ -375,6 +375,26 @@ async def medicstats(ctx, logtf_id):
 	await ctx.send(embed=embed)
 	
 
+@bot.command(brief='Playtime Leaderboard',description='Playtime Leaderboard')
+async def leaderboard(ctx):
+
+	leaderboard = sorted(list(hours.items()),key=lambda x: x[1])
+
+	embed = discord.Embed(title="Playtime Leaderboard", color=0xcf7336)
+
+	leaderboard_str = ''
+
+	for i in range(1, 11):
+
+		member = await ctx.guild.fetch_member(int(leaderboard[i][0]))
+
+		leaderboard_str += f"{str(i)}) *{member.display_name}*: {str(round(leaderboard[i][1],1))}\n"
+	
+	embed.description = leaderboard_str
+
+	await ctx.send(embed=embed)
+		
+
 @bot.command(brief='Returns user info',description='Returns user info')
 async def user(ctx, member: discord.Member=None):
 
@@ -409,6 +429,12 @@ async def user(ctx, member: discord.Member=None):
 
 	# embed.add_field(name='Activity Details', value=str(member.activity.details), inline=False)
 	await ctx.send(embed=embed)
+
+
+@bot.command(brief='Push cart',description='Push cart')
+async def pushcart(ctx):
+
+	pass
 
 
 @bot.command(brief='Returns latency to the server',description='Returns latency to the server in milliseconds')
