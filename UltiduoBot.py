@@ -378,17 +378,17 @@ async def medicstats(ctx, logtf_id):
 @bot.command(brief='Playtime Leaderboard',description='Playtime Leaderboard')
 async def leaderboard(ctx):
 
-	leaderboard = sorted(list(hours.items()),key=lambda x: x[1])
+	leaderboard = sorted(list(hours.items()),key=lambda x: x[1],reverse=True)[:10]
 
-	embed = discord.Embed(title="Playtime Leaderboard", color=0xcf7336)
+	embed = discord.Embed(title="Playtime Leaderboard (hours)", color=0xcf7336)
 
 	leaderboard_str = ''
 
 	for i in range(1, 11):
 
-		member = await ctx.guild.fetch_member(int(leaderboard[i][0]))
+		member = ctx.guild.get_member(int(leaderboard[i-1][0]))
 
-		leaderboard_str += f"{str(i)}) *{member.display_name}*: {str(round(leaderboard[i][1],1))}\n"
+		leaderboard_str += f"{str(i)}) **{member.display_name}** : {str(round(leaderboard[i-1][1],1))}\n\n"
 	
 	embed.description = leaderboard_str
 
