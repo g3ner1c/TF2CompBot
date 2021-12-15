@@ -437,6 +437,58 @@ async def pushcart(ctx):
 	pass
 
 
+@bot.command(brief='Mute command',description='Mutes user. Administrator privileges required')
+async def mute(ctx, member: discord.Member):
+
+    if ctx.message.author.guild_permissions.administrator:
+        
+        guild = ctx.guild
+        role = discord.utils.get(guild.roles, name='Muted')
+
+        await member.add_roles(role)
+
+        embed=discord.Embed(title="User muted", description="{0} has been muted. Wait to be unmuted or beat someone at MGE to be unmuted.".format(member), color=0xcf7336)
+        embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+        embed.timestamp = datetime.datetime.utcnow()
+
+        
+        await ctx.send(embed=embed)
+
+    else:
+
+        embed=discord.Embed(title="get good lol", description="You don't have administrator privileges", color=0xcf7336)
+        embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+        embed.timestamp = datetime.datetime.utcnow()
+
+
+        await ctx.send(embed=embed)
+
+
+@bot.command(brief='Unmute command',description='Unmutes user. Administrator privileges required')
+async def unmute(ctx, member: discord.Member):
+
+    if ctx.message.author.guild_permissions.administrator:
+
+        guild = ctx.guild
+        role = discord.utils.get(guild.roles, name='Muted')
+
+        await member.remove_roles(role)
+
+        embed=discord.Embed(title="Redemption", description="{0} has been unmuted".format(member), color=0xcf7336)
+        embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+        embed.timestamp = datetime.datetime.utcnow()
+        
+        await ctx.send(embed=embed)
+
+    else:
+
+        embed=discord.Embed(title="get good lol", description="You don't have administrator privileges", color=0xcf7336)
+        embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+        embed.timestamp = datetime.datetime.utcnow()
+
+        await ctx.send(embed=embed)       
+
+
 @bot.command(brief='Returns latency to the server',description='Returns latency to the server in milliseconds')
 async def ping(ctx):
 
