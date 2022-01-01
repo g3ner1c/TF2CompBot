@@ -598,6 +598,8 @@ bot.loop.create_task(heartbeat())
 
 bot.loop.create_task(check_hours_played())
 
+bot.loop.create_task(vendor_period())
+
 keep_alive()
 
 bot.run(os.getenv('discordtoken'))
