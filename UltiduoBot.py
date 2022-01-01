@@ -130,13 +130,13 @@ async def check_hours_played():
 
 		await asyncio.sleep(300) # checks every 5 minutes
 
-async def vendor_period():
+# async def vendor_period():
 
-	await bot.wait_until_ready()
-	while not bot.is_closed():
+# 	await bot.wait_until_ready()
+# 	while not bot.is_closed():
 
-		await bot.get_channel(920551455868477460).send(".")
-		await asyncio.sleep(30) # checks every 5 minutes
+# 		await bot.get_channel(920551455868477460).send(". - randomdotvendor")
+# 		await asyncio.sleep(random.randint(1,30)) # checks every 5 minutes
 
 
 playingStatus = ['Ultiduos', 'Spire MGE', 'Uncletopia | Atlanta 1', '24/7 plr_hightower'
@@ -598,7 +598,7 @@ bot.loop.create_task(heartbeat())
 
 bot.loop.create_task(check_hours_played())
 
-bot.loop.create_task(vendor_period())
+# bot.loop.create_task(vendor_period())
 
 keep_alive()
 
