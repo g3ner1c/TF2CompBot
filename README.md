@@ -7,7 +7,7 @@
 - class stats from logs
   - medic
   - 
-- leaderboard?
+- t3 transition
 
 ### Data sources
 

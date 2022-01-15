@@ -15,6 +15,7 @@ import requests
 from discord.ext import commands, tasks
 from discord_slash import SlashCommand
 from dotenv import load_dotenv
+from github import Github
 from pretty_help import PrettyHelp
 from scipy.interpolate import make_interp_spline
 
@@ -34,10 +35,10 @@ bot.help_command = PrettyHelp(color=0xcf7336) # 0xcf7336 should be used for all 
 # client = discord.Client()
 slash = SlashCommand(bot, sync_commands=True)
 
-# with open("jsons/discord2steamid.json",'r') as f:
+with open("jsons/discord2steamid.json",'r') as f:
 
-# 	discord2steam = json.load(f)
-# 	f.close()
+	discord2steam = json.load(f)
+	f.close()
 
 # with open("jsons/hours.json",'r') as f:
 
@@ -130,33 +131,33 @@ async def heartbeat():
 
 # 		await asyncio.sleep(300) # checks every 5 minutes
 
-# # async def vendor_period():
+# async def vendor_period():
 
-# # 	await bot.wait_until_ready()
-# # 	while not bot.is_closed():
+# 	await bot.wait_until_ready()
+# 	while not bot.is_closed():
 
-# # 		await bot.get_channel(920551455868477460).send(". - randomdotvendor")
-# # 		await asyncio.sleep(random.randint(1,30)) # checks every 5 minutes
-
-
-# playingStatus = ['Ultiduos', 'Spire MGE', 'Uncletopia | Atlanta 1', '24/7 plr_hightower'
-# 				 ]
+# 		await bot.get_channel(920551455868477460).send(". - randomdotvendor")
+# 		await asyncio.sleep(random.randint(1,30)) # checks every 5 minutes
 
 
-# users = list(discord2steam)
+playingStatus = ['Ultiduos', 'Spire MGE', 'Uncletopia | Atlanta 1', '24/7 plr_hightower'
+				 ]
 
 
-# @bot.event
-# async def on_ready():
+users = list(discord2steam)
 
-# 	print('Logged in as {0.user}'.format(bot), ' - ', bot.user.id)
 
-# 	while True:
+@bot.event
+async def on_ready():
 
-# 		statusNum = random.randint(0, len(playingStatus) - 1)
-# 		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name=playingStatus[statusNum]))
+	print('Logged in as {0.user}'.format(bot), ' - ', bot.user.id)
 
-# 		await asyncio.sleep(10)
+	while True:
+
+		statusNum = random.randint(0, len(playingStatus) - 1)
+		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name=playingStatus[statusNum]))
+
+		await asyncio.sleep(10)
 
 
 # @bot.command(brief='Checks whos online',description='Checks whos online')
@@ -381,6 +382,59 @@ async def medicstats(ctx, logtf_id):
 
 
 	await ctx.send(embed=embed)
+
+
+@bot.command(brief='Scrim attendance leaderboard',description='Scrim attendance leaderboard')
+async def attendance(ctx):
+
+	global discord2steam
+
+	g = Github(os.getenv("githubtoken"))
+
+	scrims = g.get_user().get_repo("T3-Archive").get_contents("scrims/scrims.json").decoded_content.decode()
+	scrims = json.loads(scrims)
+
+	count = {}
+	total = 0
+
+
+	ids = list(discord2steam)
+	for id in ids:
+		count[id] = 0
+
+	for day in scrims:
+
+		for match in day['matches']:
+
+			for logid in match['logs']:
+
+				r = requests.get(f"https://logs.tf/json/{logid}")
+				players = list(json.loads(r.text)["players"])
+
+				total += 1
+
+				for id in ids:
+
+					if discord2steam[id]['steamID3'] in players:
+
+						count[id] += 1
+						
+	count = dict(sorted(list(count.items()),key=lambda x: x[1],reverse=True))
+
+	embed = discord.Embed(title="T3 attendance", color=0xcf7336)
+
+	leaderboard_str = ''
+
+	for id in count:
+
+		leaderboard_str += f"**@<{id}>: attended __{count[id]}/{total}__ scrim halves\n\n**"
+	
+	embed.description = leaderboard_str
+
+	await ctx.send(embed=embed)
+
+	
+
 	
 
 # @bot.command(brief='Playtime Leaderboard',description='Playtime Leaderboard')
