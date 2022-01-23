@@ -6,8 +6,10 @@
 
 - class stats from logs
   - medic
-  - 
+  - combo?
 - t3 transition
+- serveme integration
+- organize team ids
 
 ### Data sources
 
