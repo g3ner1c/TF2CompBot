@@ -476,7 +476,7 @@ async def attendance(ctx):
 
 		for id in count:
 
-			leaderboard_str += f"**@<{id}>: attended __{count[id]}/{total}__ scrim halves**\n\n"
+			leaderboard_str += f"**<@{id}>: attended __{count[id]}/{total}__ scrim halves**\n\n"
 		
 		embed.description = leaderboard_str
 
