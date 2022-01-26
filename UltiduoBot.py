@@ -307,7 +307,7 @@ async def logs(ctx, member: discord.Member=None):
 
 
 @bot.command(brief='Medic performance analysis for logs',description='Medic performance analysis for logs from logs.tf')
-async def medicstats(ctx, logtf_id):
+async def medicdiff(ctx, logtf_id):
 
 	async with ctx.typing():
 
@@ -384,56 +384,101 @@ async def medicstats(ctx, logtf_id):
 	await ctx.send(embed=embed)
 
 
+@bot.command(brief='Medic performance history',description='Medic performance history')
+async def medicstats(ctx, member: discord.Member=None):
+
+	if member is None:
+
+			member = ctx.message.author
+		
+
+	async with ctx.typing():
+	
+		if str(member.id) not in list(discord2steam):
+
+			embed = discord.Embed(title="Sorry your SteamID isn't in the database yet :(", description="Contact <@538921994645798915> to tell them your SteamID", color=0xcf7336)
+
+		else:
+
+			r = requests.get(f"https://logs.tf/api/v1/log?player={discord2steam[str(member.id)]['steamID64']}&limit=20")
+
+			embed=discord.Embed(title='Recent logs of ' + member.display_name, url=f"https://logs.tf/profile/{discord2steam[str(member.id)]['steamID64']}", color=0xcf7336)
+
+			if len(json.loads(r.text)['logs']) == 0:
+
+				embed.description = "You don't have any logs on logs.tf :("
+
+			avg_heals = []
+
+			for logid in [match['id'] for match in json.loads(r.text)['logs'] if match['players'] == 12]: # list of 6s log ids
+
+				log = json.loads(requests.get(f"https://logs.tf/json/{logid}").text)
+
+				player = discord2steam[str(member.id)]['steamID3']
+
+				if log['players'][player]['class_stats'][0]['type'] == 'medic':
+					# player is a medic
+					medic = log['players'][player]
+					avg_heals.insert(0, round(medic['heal']/(log['info']['total_length']/60))) # average heal rate in h/m
+
+
+
+		embed.set_footer(text=((f'Requested by {ctx.message.author.display_name} (') + str(ctx.message.author.id) + ')'))
+		embed.timestamp = datetime.datetime.utcnow()
+
+	await ctx.send(embed=embed)
+
+
 @bot.command(brief='Scrim attendance leaderboard',description='Scrim attendance leaderboard')
 async def attendance(ctx):
 
 	global discord2steam
 
-	g = Github(os.getenv("githubtoken"))
+	async with ctx.typing():
 
-	scrims = g.get_user().get_repo("T3-Archive").get_contents("scrims/scrims.json").decoded_content.decode()
-	scrims = json.loads(scrims)
+		g = Github(os.getenv("githubtoken"))
 
-	count = {}
-	total = 0
+		scrims = g.get_user().get_repo("T3-Archive").get_contents("scrims/scrims.json").decoded_content.decode()
+		scrims = json.loads(scrims)
+
+		count = {}
+		total = 0
 
 
-	ids = list(discord2steam)
-	for id in ids:
-		count[id] = 0
+		ids = list(discord2steam)
+		for id in ids:
+			count[id] = 0
 
-	for day in scrims:
+		for day in scrims:
 
-		for match in day['matches']:
+			for match in day['matches']:
 
-			for logid in match['logs']:
+				for logid in match['logs']:
 
-				r = requests.get(f"https://logs.tf/json/{logid}")
-				players = json.loads(r.text)["names"]
+					r = requests.get(f"https://logs.tf/json/{logid}")
+					players = json.loads(r.text)["names"]
 
-				total += 1
+					total += 1
 
-				for id in ids:
+					for id in ids:
 
-					if discord2steam[id]['steamID3'] in players:
+						if discord2steam[id]['steamID3'] in players:
 
-						count[id] += 1
-						
-	count = dict(sorted(list(count.items()),key=lambda x: x[1],reverse=True))
+							count[id] += 1
+							
+		count = dict(sorted(list(count.items()),key=lambda x: x[1],reverse=True))
 
-	embed = discord.Embed(title="T3 attendance", color=0xcf7336)
+		embed = discord.Embed(title="T3 attendance", color=0xcf7336)
 
-	leaderboard_str = ''
+		leaderboard_str = ''
 
-	for id in count:
+		for id in count:
 
-		leaderboard_str += f"**@<{id}>: attended __{count[id]}/{total}__ scrim halves\n\n**"
-	
-	embed.description = leaderboard_str
+			leaderboard_str += f"**@<{id}>: attended __{count[id]}/{total}__ scrim halves\n\n**"
+		
+		embed.description = leaderboard_str
 
 	await ctx.send(embed=embed)
-
-	
 
 	
 

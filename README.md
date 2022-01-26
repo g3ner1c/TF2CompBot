@@ -14,4 +14,5 @@
 ### Data sources
 
 - [Steam WebAPI](https://steamcommunity.com/dev)
+- [logs.tf API](https://logs.tf/about#json)
 - [teamwork.tf API](https://github.com/teamworktf/website_api)
