@@ -457,6 +457,7 @@ async def attendance(ctx):
 
 					r = requests.get(f"https://logs.tf/json/{logid}")
 					players = json.loads(r.text)["names"]
+					print(logid)
 
 					total += 1
 
@@ -465,6 +466,7 @@ async def attendance(ctx):
 						if discord2steam[id]['steamID3'] in players:
 
 							count[id] += 1
+							print(id)
 							
 		count = dict(sorted(list(count.items()),key=lambda x: x[1],reverse=True))
 
@@ -474,7 +476,7 @@ async def attendance(ctx):
 
 		for id in count:
 
-			leaderboard_str += f"**@<{id}>: attended __{count[id]}/{total}__ scrim halves\n\n**"
+			leaderboard_str += f"**@<{id}>: attended __{count[id]}/{total}__ scrim halves**\n\n"
 		
 		embed.description = leaderboard_str
 
