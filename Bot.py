@@ -650,15 +650,15 @@ async def netgraph(ctx):
 @bot.command(brief='General information',description='General information')
 async def info(ctx):
 
-	await ctx.send('**UltiduoBot v0.0.1**\n' \
-		'Discord bot made for this server\n' \
+	await ctx.send('**TF2CompBot**\n' \
+		'General competitive TF2 oriented discord bot\n' \
 		'Source code is available on GitHub by using *!github*')
 
 
 @bot.command(brief='GitHub Repository',description='GitHub Repository')
 async def github(ctx):
 
-	await ctx.send('https://github.com/awesomeplaya211/UltiduoBot')
+	await ctx.send('https://github.com/awesomeplaya211/TF2CompBot')
 
 
 @bot.command(brief='Status check with uptime',description='Status check with uptime')
